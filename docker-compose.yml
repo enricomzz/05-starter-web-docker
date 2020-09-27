@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  # webapp
+  app-server: 
+    # composer builds the image
+    build:
+      context: profile
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment: # Pass environment variables to the service
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/profiles
+      SPRING_DATASOURCE_USERNAME: empuser
+      SPRING_DATASOURCE_PASSWORD: password
+      TMP: D:\tmp
+    networks: # Networks to join (using their name)
+      - backend
+    # mysql database
+  db:
+    # image is already available from the previous exercise
+    image: my-mysql:latest
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: profiles
+      MYSQL_USER: empuser
+      MYSQL_PASSWORD: password
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - backend  
+  
+# Volumes
+volumes:
+  db-data:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  backend:
+  
